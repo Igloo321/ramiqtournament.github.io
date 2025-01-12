@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="greet" id="greeting">
+        <h1> 🎊 CONGRATULATIONS 🎊 </h1>
+        <h2 id="winnerName"></h2>
+    </div>
+
+    <canvas id="fireworkCanvas"></canvas>
+    <main>
+        <section class="main">
+            <h1>RAMIQ's</h1>
+            <h4>CUP</h4>
+            <h6>Credit : Igloo?</h6>
+            <div class="teams">
+                <div class="team1">
+                    <input type="text">
+                    <input type="text">
+                    <div class="line1"><img src="images/line1.png" alt=""></div>
+                </div>
+                <div class="team2">
+                    <input type="text">
+                    <input type="text">
+                    <div class="line1"><img src="images/line1.png" alt=""></div>
+                </div>
+                <div class="team3">
+                    <input type="text">
+                    <input type="text">
+                    <div class="line1"><img src="images/line1.png" alt=""></div>
+                </div>
+                <div class="team4">
+                    <input type="text">
+                    <input type="text">
+                    <div class="line1"><img src="images/line1.png" alt=""></div>
+                </div>
+            </div>
+
+            <div class="teams2">
+                <div class="team1">
+                    <input type="text">
+                    <img src="images/line1.png" id="line1">
+                </div>
+                <div class="team2">
+                    <input type="text">
+                </div>
+                <div class="team3">
+                    <input type="text">
+                    <img src="images/line1.png" id="line2">
+                </div>
+                <div class="team4">
+                    <input type="text">
+                </div>
+
+
+                <div class="teams3">
+                    <team1><input type="text"></team1>
+                    <img src="images/line2.png" id="line3">
+                    <team2><input type="text"></team2>
+                </div>
+
+                <div class="result"><img src="images/1st-prize.png" id="firstst"><input type="text" id="winner"></div>
+            </div>
+
+            <div class="btn" id="win-button"><button id="btn">Winner</button></div>
+        </section>
+    </main>
+
+
+
+    <script>
+        const canvas = document.getElementById('fireworkCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const fireworks = [];
+
+        class Firework {
+            constructor(x, y, colors) {
+                this.x = x;
+                this.y = y;
+                this.colors = colors;
+                this.particles = [];
+
+                for (let i = 0; i < 250; i++) { // Increased particle count
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 7 + 2;
+                    this.particles.push({
+                        x: this.x,
+                        y: this.y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        alpha: 1,
+                        size: Math.random() * 6 + 4, // Increased size of particles
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)]
+                    });
+                }
+            }
+
+            update() {
+                this.particles.forEach((p) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= 0.02;
+                });
+
+                this.particles = this.particles.filter(p => p.alpha > 0);
+            }
+
+            draw() {
+                this.particles.forEach((p) => {
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            isDone() {
+                return this.particles.length === 0;
+            }
+        }
+
+        function spawnFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const colors = ["#ff5733", "#33ff57", "#5733ff", "#ffff33", "#ff33ff"];
+            fireworks.push(new Firework(x, y, colors));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            fireworks.forEach((firework, index) => {
+                firework.update();
+                firework.draw();
+                if (firework.isDone()) {
+                    fireworks.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        let fireworkInterval;
+        const greeting = document.getElementById('greeting');
+
+        document.getElementById('btn').addEventListener('click', () => {
+            if (fireworkInterval) clearInterval(fireworkInterval);
+            fireworkInterval = setInterval(spawnFirework, 200); // Increased firework spawn rate
+            greeting.style.visibility = "visible";
+            const name = document.getElementById('winner').value;
+            document.getElementById('winnerName').textContent = name || 'No name provided!';
+            setTimeout(() => {
+                clearInterval(fireworkInterval);
+                greeting.style.visibility = "";
+                document.getElementById('winnerName').textContent = '';
+            }, 30000); // Stop spawning after 5 seconds
+        });
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+
+</html>

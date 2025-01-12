@@ -295,3 +295,6 @@ canvas {
   -webkit-text-stroke-width: 3px;
   text-transform: uppercase;
 }
+section{ 
+  transform: translate(43%, 10%) scale(1.2);
+}
